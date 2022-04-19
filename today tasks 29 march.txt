@@ -1,0 +1,19 @@
+
+Taks:
+-----
+1. In fi condition, how to consider Upper/lower case letters in script
+2. If file doesn't exist, create the file
+3. Only root user has to run shell script
+4. Delete all empty files under /tmp
+5. Find out available storage in / filesytem, if i have more than 1gb please proceed
+6. Find out available storage in / filesytem as a percentage, print echo statement if 
+   it contains more than 30%
+7. Find out available memory as a percentage, print echo statement if 
+   it contains more than 60%/1gb
+8. Print 1 to 10 in for loop condition
+syntax
+-------	
+for i in 'echo shortcut'
+do
+echo $i
+done

@@ -1,0 +1,188 @@
+ http://44.197.119.208/nagiosxi
+!vrrehuoUgC3XsJ2ctJM
+============================================================================
+Ansible uses the following thre modes for remote configuration
+1 Ansible adhoc commands
+2 Ansible playbooks
+3 Ansible roles
+
+Impotant modules in ansible
+1 command : This is used for executing basic linux commands on the remote machines
+2 shell: This is used for executing linux commands which involve redirection and piping
+3 ping: Used to check if a remote manged host is pingable or not
+4 copy: Used to copy files from controller into managed hosts
+5 fetch: Used to copy files from managed hosts into controller
+6 user: Used for creating users on the managed hosts and for controlling their accounts
+7 file: Used for creating files and directories on the managed hosts
+8 git: Used to automate the checkin and checkout process in git version controlling
+9 apt: Used for installing packages on the ubuntu based linux machines
+10 yum:Used for installing packages in rhel,oel,centos,fedora 
+11 servcie: Used for starting or stopping services
+12 uri : used to check if a remote url is reachable or not
+13 debug :Used to capture the output of any specific ansible module and display it on the console
+14 ec2: Used for configuring servers on the AWS cloud
+
+
+
+
+
+
+
+
+
+
+
+<ignore_errors: True>
+
+
+By default Ansible stops executing tasks on a host when a task fails on that host.
+You can use ignore_errors to continue on in spite of the failure. The ignore_errors directive only works when the task is able to run and returns a value of 'failed'
+---
+- hosts: localhost
+tasks:
+- name: Stop httpd if already running
+service: name=httkd state=stopped
+ignore_errors: True
+
+- name: Stop httpd if already running
+service: name=httpd state=stopped
+
+
+
+
+
+
+
+
+======================================================
+when(we can use this command in conditional statements,boolean statements, variables,registered variables, facts)
+
+ansible_machine == "86-6x"
+ansible_distribution_major_version == "8"
+ansible_memfree_mb == 1024
+ansible_os_family == "RedHat"
+ansible_distribution in supported_distros
+
+---
+- name: when demo
+  hosts: all
+  vars:
+    supported_distros:
+       - Ubuntu
+       - CentOS
+       - Fedora
+       - RedHat
+  tasks:
+   - name: install RH family specific packages
+     yum:
+       name: nginx
+       state: present
+     when: ansible_distribution in supported_distros
+
+------------------------------------------------------
+when command on multiple conditions
+
+---
+- name: using multiple conditions
+  hosts: all
+  tasks:
+  - package:
+      name: httpd
+      state: installed
+    when:
+     - ansible_distribution == "RedHat"
+     - ansible_memfree_mb > 512
+----------------------------------------------------------
+
+---
+- name: using multiple conditions
+  hosts: all
+  tasks:
+  - package:
+      name: httpd
+      state: installed
+    when: (ansible_distribution == "RedHat" and ansible_memfree_mb > 512 )
+         or
+        (ansible_distribution == "CentOS" and ansible_memfree_mb > 1024 ) 
+---------------------------------------------------------------------------
+
+---
+- hosts: all
+  tasks:
+  - name: "shut down CentOS 6 and Debian 7 systems"
+    command: /sbin/shutdown -t now
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6") or
+          (ansible_distribution == "Debian" and ansible_distribution_major_version == "7")
+           
+
+======================================================================================================================
+changed_when
+
+# normal playbook 
+--- 
+- hosts: web
+  tasks:
+    - name: "Start the Apache HTTPD Server"
+      become: true
+      become_user: root
+      register: starthttpdout
+      shell: "httpd -k start"
+      
+
+    - debug:
+        msg: "{{starthttpdout.stdout}}"
+
+
+#The Modified Playbook with changed_when
+--- 
+- hosts: web
+  tasks:
+  - name: "Start the Apache HTTPD Server"
+    become: true
+    become_user: root
+    register: starthttpdout
+    shell: "httpd -k start"
+    changed_when: "'already running' not in starthttpdout.stdout"
+
+  - debug:
+      msg: "{{starthttpdout.stdout}}"
+======================================================
+
+how register works
+---
+- name: demo how register works
+  hosts: all
+  tasks:
+  - name: show loop register
+    shell: "echo {{ item }}"
+    loop:
+      - "one"
+      - "two"
+    register: result
+  - name: show register results
+    debug:
+      var: result
+
+=======================================================
+
+force_handlers:true
+
+
+
+
+---
+- name: configure vsftpd using a template
+  hosts: all
+  vars:
+    anonymous_enable: yes
+    local_enable: yes
+    write_enable: yes
+    anon_upload_enable: yes
+  tasks:
+  - name: install vsftpd
+    yum:
+    name: vsftpd
+  - name: use template to copy ftp config
+    template:
+      src: vsftpd.j2
+      dest: /etc/vsftpd/vsftpd.conf

@@ -1,0 +1,166 @@
+March 22nd
+
+text processing tools:
+################
+find: search files and folders based on location/name/size/time/permissions/ownerships/format
+examples
+	find / -name os-release       (/etc/os-release)
+	find / -name passwd		(command finds the all user details)
+	find / -name *.txt		(to find out all .txt files)
+	find / -name *.sh		(to find out all .sh files)
+	find / -size +10M		(to findout all the files which are more than 10MB )
+	find / -atime +2		(to find the all the files you have accessd for last two days <atime-acesstime>,<ctime-creationtime>,<mtime-modificationtime>)
+644
+rw-r--r--
+
+find /app -user amar -type f
+
+find /app -user amar -type f -exec rm -rf {} \;
+
+                             -exec chown pradeep {} \;
+
+find /app -perm 777 -type f -exec chmod 644 {} \;
+
+tasks:
+print filenames which are created since 2 days? (find ./ -maxdepth 2 -mtime +2)
+find /home -type f -mtime -2
+
+<find /path/to/files -type f -mtime +2 -print>
+print filenames which are more than 10mb and less than 15mb (find . -size +10M -size -15M)
+
+find -size +10M -size -15M
+
+find /home/ -type f -size +512k -exec ls -lh {} \;
+I have added here -lh to the ls output so it will actually show the files with their sizes in a nice human readable format. Similar for smaller files you would use -size -512k.
+print files with amar group? (find /home -user amar)  (find directory-location -user {username} -name {file-name})
+
+
+############
+grep: search the keywords from a file or command output.
+
+tasks: pls find out how many occuruces  my keyword is therealong with line numbers?
+
+grep -o -i sai example.txt | wc -l
+
+###################
+wc: we can find out number of lines/words/charectors from any file/command output
+
+################
+
+echo: it will print messages which you give.
+
+############
+
+tr: translate the outputs from small to caps and viseversa
+
+cat sample |tr [a-z] [A-Z]
+
+##############################
+
+head: it shows first n number of lines
+ps -ef|head -n 20
+
+task:  how to exclude first two lines (tail -n +2 file)
+#####################
+tail: it shows first n number of lines
+
+ps -ef|tail -n 20
+how to exclude last two lines? (head -n -2 file)
+####################
+sort: sort the alphabets/numbers in assending and descending
+
+sort filename
+sort -n filename
+command|sort
+
+######################
+uniq: removes the adjacent duplicates
+
+sort filename|uniq
+
+task: how many duplicates we have? (sort file | uniq -c) (c gives the count of duplicates in the file)
+      which line number has the duplicates? ()
+#############################
+
+sed: search and replace 
+
+sed -i "s/amar/pradeep/gi" sample
+
+tasks:
+1) pls delete all empty lines? (sed '/^$/d' file.txt)
+
+2) pls replace amar from 5 to 10 lines? (sed '5,10 s/unix/linux/g' file)
+-    (sed '5,10 s/amar/new/g' file.txt)
+
+3) pls replace amar with pramod in which lines pradeep is there? (sed '/word in line/s/word/new/g' sedtest.txt)
+- sed '/pradeep/s/amar/pramod/g' sedtest.txt
+
+4) pls remove second occurence of amar in any line? (sed -i 's/word//2g' file.txt)
+
+#######################################
+
+awk: extract the fields/columns based on some deleminator/separator from the output
+
+   90  cat /etc/passwd|grep ec2-user|awk -F ":" '{print $3}'
+   91  cat /etc/passwd|grep ec2-user|awk -F ":" '{print $3,$6}'
+   92  cat /etc/passwd|grep ec2-user|awk -F ":" '{print $1,$3,$6}'
+   93  cat /etc/passwd|awk -F ":" '{print $1,$3,$6}'
+   94  cat /etc/passwd|awk -F ":" '{print $1,"home directory is",$6}'
+awk: it is used to extract keys or columns or fields from the given output.
+
+[root@ip-172-31-37-43 ~]# uname -a|awk -F " " '{print $3}'
+5.10.102-99.473.amzn2.x86_64
+[root@ip-172-31-37-43 ~]#
+
+[root@ip-172-31-37-43 ~]# cat /etc/os-release |grep ^NAME|awk -F '"' '{print $2}'|awk '{print $1}'
+Amazon
+[root@ip-172-31-37-43 ~]#
+
+[root@ip-172-31-37-43 ~]# free -m|grep Mem|awk '{print $7}'
+725
+[root@ip-172-31-37-43 ~]#
+
+[root@ip-172-31-37-43 ~]# df -m /|grep -v Filesystem|awk '{print $4}'
+6629
+[root@ip-172-31-37-43 ~]#
+
+
+tasks:
+how many words for lines?
+awk '{ print NF }' awktest.txt
+what is the last word in each line?
+ awk 'NF>1{print $NF}' awktest.txt
+how many charectors in the last word?
+cat filename.txt | awk '{print $NF}' | awk '{print length}'
+
+how many times charector  'h' is available? 
+ awk '{print gsub(/h/, "")}' awktest.txt
+and what is the position of 'h'?
+
+what is the third position charector in last word?
+
+
+cut : it is used to extract keys or columns or fields from the given output.
+
+#######################
+xargs:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
